@@ -1,0 +1,68 @@
+.wrapper {
+	height          : 800px;
+	background-color: #222;
+	color           : #fff;
+	display         : flex;
+}
+
+.calculator {
+	display       : flex;
+	flex-direction: column;
+	width         : 400px;
+	flex          : 1 1 auto;
+}
+
+.history {
+	display        : flex;
+	flex-direction : column;
+	justify-content: flex-end;
+	align-items    : flex-end;
+	width          : 200px;
+	background     : lighten(#222, 5%);
+	margin         : 5px;
+	padding        : 20px 10px;
+}
+
+.screen {
+	display       : flex;
+	flex-direction: column;
+	height        : 200px;
+	margin        : 5px;
+	margin-right  : 0;
+	gap           : 5px;
+}
+
+.equation {
+	display        : flex;
+	align-items    : center;
+	justify-content: flex-end;
+	max-height     : 50px;
+	background     : lighten(#222, 3%);
+	padding        : 20px;
+	font-size      : 1.3em;
+}
+
+.value {
+	display        : flex;
+	flex           : 1 1 auto;
+	align-items    : flex-end;
+	justify-content: flex-end;
+	background     : lighten(#222, 3%);
+	padding        : 20px;
+}
+
+.keys {
+	flex                 : 1 1 auto;
+	display              : grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap                  : 5px;
+	margin-left          : 5px;
+	margin-bottom        : 5px;
+
+	grid-template-areas:
+		"clear negate percent multiply"
+		"seven eight nine divide"
+		"four five six add"
+		"one two three subtract"
+		"backspace zero decimal equal"
+}

@@ -1,0 +1,11 @@
+.button {
+	background     : lighten(#222, 3%);
+	display        : flex;
+	justify-content: center;
+	align-items    : center;
+	cursor         : pointer;
+
+	&:hover {
+		background: lighten(#222, 5%);
+	}
+}
