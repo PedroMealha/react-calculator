@@ -4,11 +4,14 @@ import styles from './button.module.scss';
 
 import {
 	addToEquation,
+	setValue,
+	setOperator,
+
 	calculate,
-	clearAll,
-	clearLast,
+	clear,
+	undo,
 	negate,
-	addToHistory
+	// addToHistory,
 } from "../../store/calculator/calculator.slice";
 
 const Button = ({ button }) => {
@@ -19,26 +22,33 @@ const Button = ({ button }) => {
 
 		switch (key) {
 			case 'Equal':
-				dispatch(calculate())
-				dispatch(addToHistory(key));
+				dispatch(calculate(key))
+				// dispatch(addToHistory(key));
 				break;
 			case 'Delete':
-				dispatch(clearAll())
+				dispatch(clear())
 				break;
 			case 'Backspace':
-				dispatch(clearLast())
+				dispatch(undo())
 				break;
 			case 'Negate':
 				dispatch(negate())
 				break;
 			default:
-				if (/[^0-9.]/g.test(key)) {
-					dispatch(addToHistory(key));
+				if (/[^0-9.]/.test(key)) {
+					dispatch(setOperator(key))
 					dispatch(calculate())
+					dispatch(addToEquation({key, hasSpace: true}))
 				}
-				dispatch(addToEquation(key))
+				
+				if (/[0-9.]/.test(key)) {
+					dispatch(setValue(key))
+					dispatch(addToEquation({key, hasSpace: false}))
+				}
+
 				break;
 		}
+
 		return key;
 	}
 

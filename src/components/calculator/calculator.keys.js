@@ -1,5 +1,3 @@
-
-
 const CALCULATOR_KEYS = [
 	{
 		name: "clear",
