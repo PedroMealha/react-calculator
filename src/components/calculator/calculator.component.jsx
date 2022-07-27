@@ -15,11 +15,15 @@ const Calculator = () => {
 		<div className={ styles.wrapper }>
 			<div className={ styles.calculator }>
 				<div className={ styles.screen }>
-					<div className={ styles.lastEquation }>
-						{ calc.total } { calc.operator }
+					<div className={ styles.equation }>
+						<div>{ calc.showEquation }</div>
+						<div>{ calc.total }</div>
 					</div>
 					<div className={ styles.value }>
-						<div>{ calc.lastValue }</div>
+						<div>
+							{ calc.total } { calc.operator }{ " " }
+							<span className={ calc.done ? "done" : "" }>{ calc.number }</span>
+						</div>
 					</div>
 				</div>
 				<div className={ styles.keys }>
@@ -29,17 +33,14 @@ const Calculator = () => {
 				</div>
 			</div>
 			<div className={ styles.history }>
-				<div>value: { calc.value }</div>
-				<div>lastValue: { calc.lastValue }</div>
-				<div>total: { calc.total }</div>
-				<div>operator: { calc.operator }</div>
-				<div>equation: { calc.equation }</div>
-				<div>lastEquation: { calc.lastEquation }</div>
-				<div>history: { calc.history }</div>
+        {/* <div>steps: {calc.steps}</div> */}
 
-				{/* { calc.history.map((log, idx) => (
-					<div key={ idx }>{ log }</div>
-				)) } */}
+				{ calc.history.map((log, idx) => (
+					<div key={ idx }>
+						<div>{ log.equation } =</div>
+						<div>{ log.total }</div>
+					</div>
+				)) }
 			</div>
 		</div>
 	);

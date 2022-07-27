@@ -1,60 +1,48 @@
 import { useDispatch } from "react-redux";
 
-import styles from './button.module.scss';
+import styles from "./button.module.scss";
 
 import {
-	addToEquation,
-	setValue,
-	setOperator,
-
-	calculate,
-	clear,
-	undo,
-	negate,
-	// addToHistory,
+  setNumber,
+  setOperator,
+  calculate,
 } from "../../store/calculator/calculator.slice";
 
 const Button = ({ button }) => {
-	const { name, tag, text, key } = button;
-	const dispatch = useDispatch();
+  const { name, tag, text, key, type } = button;
+  const dispatch = useDispatch();
 
-	const handleClick = key => {
+  const handleClick = () => {
+    switch (type) {
+      case "number":
+        dispatch(setNumber(key));
+        break;
+      case "operator":
+        dispatch(setOperator(key));
+				dispatch(calculate(key));
+        break;
+      default:
+        break;
+    }
+  };
 
-		switch (key) {
-			case 'Equal':
-				dispatch(calculate(key))
-				// dispatch(addToHistory(key));
-				break;
-			case 'Delete':
-				dispatch(clear())
-				break;
-			case 'Backspace':
-				dispatch(undo())
-				break;
-			case 'Negate':
-				dispatch(negate())
-				break;
-			default:
-				if (/[^0-9.]/.test(key)) {
-					dispatch(setOperator(key))
-					dispatch(calculate())
-					dispatch(addToEquation({key, hasSpace: true}))
-				}
-				
-				if (/[0-9.]/.test(key)) {
-					dispatch(setValue(key))
-					dispatch(addToEquation({key, hasSpace: false}))
-				}
-
-				break;
-		}
-
-		return key;
-	}
-
-	return tag === 'ico' ?
-		<i className={ styles.button } style={ { gridArea: name } } onClick={ () => handleClick(key) }>{ text }</i> :
-		<div className={ styles.button } style={ { gridArea: name } } onClick={ () => handleClick(key) }>{ text }</div>
-}
+  return tag === "ico" ? (
+    <i
+      className={styles.button}
+      style={{ gridArea: name }}
+      onClick={() => handleClick()}
+    >
+      {text}
+    </i>
+  ) : (
+    <div
+      className={styles.button}
+      style={{ gridArea: name }}
+      onClick={() => handleClick()}
+    >
+      {text}
+    </div>
+  );
+};
 
 export default Button;

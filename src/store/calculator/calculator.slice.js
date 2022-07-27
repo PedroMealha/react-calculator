@@ -1,102 +1,76 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-	value: "",
-	lastValue: "",
-	total: 0,
+	number: "",
+	lastNumber: "0",
+	total: "",
+	lastTotal: "0",
+	equation: "0",
+	lastEquation: "0",
 	operator: "",
-	equation: "",
-	lastEquation: "",
+	steps: [],
 	history: [],
-	canCalculate: false,
-	isNegated: false,
+	opCount: 2,
+	opChange: false,
+	ranOnce: false,
+
+	showEquation: "",
 };
 
 export const calculatorSlice = createSlice({
 	name: "calculator",
 	initialState,
 	reducers: {
-		addToEquation: (state, action) => {
-			action.payload.hasSpace ?
-			state.equation += ` ${action.payload.key} ` :
-			state.equation += action.payload.key;
-			state.lastEquation = state.equation;
+		setNumber: (state, action) => {
+			state.number += action.payload;
+			state.opChange = true;
 		},
 
-		setValue: (state, action) => {
-			state.value += action.payload;
-			state.lastValue = state.value;
-			state.canCalculate = true;
-		},
-		
 		setOperator: (state, action) => {
-			state.operator = action.payload;
-		},
-		
-		calculate: (state, action) => {
-
-			if (state.canCalculate) {
-				state.total = window.eval(state.equation);
-				state.canCalculate = false;
+			if (state.opChange) {
+				state.steps.push(state.number);
+				state.opCount <= 0 ? (state.opCount = 0) : state.opCount--;
+				state.operator = action.payload;
+			} else {
+				state.steps.pop();
+				state.operator = action.payload;
 			}
 
-			if (action.payload == "Equal") {
-				state.operator = "=";
-				state.total = state.lastEquation;
-				state.lastEquation = state.equation;
+			state.steps.push(state.operator);
+		},
+
+		calculate: (state) => {
+			if (state.opChange) {
+				state.opChange = false;
+				state.lastNumber = state.number;
+				state.number = "";
+
+				if (state.opCount == 0) {
+					const length = state.steps.length - 2;
+					state.lastTotal = eval(state.lastEquation);
+					state.lastEquation = `${state.steps[length - 2]} ${state.steps[length - 1]} ${state.steps[length]}`;
+
+					state.equation = `${state.total} ${state.steps[length - 1]} ${state.steps[length]}`;
+					state.total = eval(state.equation);
+					state.showEquation = state.equation;
+
+					state.history.push({
+						equation: state.showEquation,
+						total: state.total,
+					});
+				} else {
+					state.total = state.lastNumber;
+				}
 			}
-			else {
-				state.lastValue = state.total;
-				state.equation = state.total;
-			}
-			
-			state.value = "";
-			state.isNegated = false;
-		},
-		
-		clear: (state) => {
-			Object.keys(state).forEach((key) => (state[key] = initialState[key]));
-		},
-		
-		undo: (state) => {
-			const length = state.value.length;
-			length > 1
-				? (state.value = state.value.slice(0, length - 1))
-				: (state.value = "");
-
-			const eLength = state.equation.length;
-			if (eLength > eLength - length)
-				state.equation = state.equation.slice(0, eLength - 1);
-
-			state.lastValue = state.value;
-		},
-		
-		negate: (state) => {
-			const regex = /[-()]/g;
-			state.equation = state.isNegated
-				? state.equation.replace(regex, "")
-				: `-(${state.equation})`;
-			state.isNegated = !state.isNegated;
 		},
 
-		// addToHistory: (state, action) => {
-		// 	if (/[^0-9.]/g.test(action.payload))
-		// 		state.history.push(state.equation);
-		// },
+		setsteps: (state, val) => {
+			state.steps.push(val);
+		},
 	},
 });
 
-export const {
-	addToEquation,
-	setValue,
-	setOperator,
-
-	// addToHistory,
-	calculate,
-	clear,
-	undo,
-	negate,
-} = calculatorSlice.actions;
+export const { setNumber, setOperator, calculate } = calculatorSlice.actions;
 
 export const selectCalculator = (state) => state.calculator;
 
