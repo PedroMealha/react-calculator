@@ -12,7 +12,9 @@ const initialState = {
 	history: [],
 	opCount: 2,
 	opChange: false,
-	ranOnce: false,
+	wasEqual: false,
+	newNumber: true,
+	isNegated: false,
 
 	showEquation: "",
 };
@@ -22,8 +24,14 @@ export const calculatorSlice = createSlice({
 	initialState,
 	reducers: {
 		setNumber: (state, action) => {
+			if (state.newNumber) {
+				state.number = "";
+				state.newNumber = false;
+			}
 			state.number += action.payload;
+			state.lastNumber += action.payload;
 			state.opChange = true;
+			state.isNegated = false;
 		},
 
 		setOperator: (state, action) => {
@@ -37,23 +45,81 @@ export const calculatorSlice = createSlice({
 			}
 
 			state.steps.push(state.operator);
+			state.newNumber = true;
+		},
+
+		updateValuePercent: (state) => {
+			state.steps.push(state.number);
+			state.steps.push(state.operator);
+			state.opCount = 0;
+			state.opChange = true;
+		},
+
+		setTotal: (state) => {
+			state.number = state.opCount > 0 ? state.lastNumber : state.number;
+			state.number = state.number !== state.lastNumber ? state.number : state.lastNumber;
+			state.showEquation = `${state.total} ${state.operator} ${state.number}`;
+			state.lastTotal = eval(state.showEquation);
+			state.total = eval(`${state.total} ${state.operator} ${state.number}`);
+			state.opCount = 0;
+			state.opChange = true;
+			state.steps.push(state.number);
+			state.steps.push(state.operator);
+			state.history.push({
+				equation: state.showEquation,
+				total: state.total,
+			});
+
+			state.wasEqual = true;
+			state.newNumber = true;
+		},
+
+		negate: (state) => {
+			console.log("state.number:", state.number);
+			state.newNumber = false;
+			state.wasEqual = false;
+
+			switch (state.number) {
+				case "0":
+					state.number = "-";
+					state.number = `${(state.number *= -1)}`;
+					break;
+				case "":
+					state.number = "-";
+					break;
+				case "-":
+					state.number = "";
+					state.number = `${(state.number *= -1)}`;
+					break;
+				default:
+					state.number = `${(state.number *= -1)}`;
+					break;
+			}
+			state.lastNumber = state.number;
+			state.isNegated = !state.isNegated;
+			console.log("state.number:", state.number);
+		},
+
+		percentage: (state) => {
+			const divider =
+				state.operator === "-" || state.operator === "+"
+					? 100
+					: 100 * state.total;
+			state.number = (state.number * state.total) / divider;
 		},
 
 		calculate: (state) => {
-			if (state.opChange) {
+			if (state.opChange && !state.wasEqual) {
 				state.opChange = false;
 				state.lastNumber = state.number;
 				state.number = "";
-
 				if (state.opCount == 0) {
 					const length = state.steps.length - 2;
 					state.lastTotal = eval(state.lastEquation);
 					state.lastEquation = `${state.steps[length - 2]} ${state.steps[length - 1]} ${state.steps[length]}`;
-
 					state.equation = `${state.total} ${state.steps[length - 1]} ${state.steps[length]}`;
 					state.total = eval(state.equation);
 					state.showEquation = state.equation;
-
 					state.history.push({
 						equation: state.showEquation,
 						total: state.total,
@@ -62,15 +128,26 @@ export const calculatorSlice = createSlice({
 					state.total = state.lastNumber;
 				}
 			}
+			state.wasEqual = false;
+			state.newNumber = true;
 		},
 
-		setsteps: (state, val) => {
-			state.steps.push(val);
+		clearAll: (state) => {
+			Object.keys(state).forEach((key) => (state[key] = initialState[key]));
 		},
 	},
 });
 
-export const { setNumber, setOperator, calculate } = calculatorSlice.actions;
+export const {
+	setNumber,
+	setOperator,
+	updateValuePercent,
+	setTotal,
+	negate,
+	calculate,
+	percentage,
+	clearAll,
+} = calculatorSlice.actions;
 
 export const selectCalculator = (state) => state.calculator;
 

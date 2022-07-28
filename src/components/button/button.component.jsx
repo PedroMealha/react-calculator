@@ -5,7 +5,12 @@ import styles from "./button.module.scss";
 import {
   setNumber,
   setOperator,
+  updateValuePercent,
+  setTotal,
   calculate,
+  negate,
+  percentage,
+  clearAll,
 } from "../../store/calculator/calculator.slice";
 
 const Button = ({ button }) => {
@@ -18,8 +23,26 @@ const Button = ({ button }) => {
         dispatch(setNumber(key));
         break;
       case "operator":
-        dispatch(setOperator(key));
-				dispatch(calculate(key));
+        switch (key) {
+          case "Delete":
+            dispatch(clearAll());
+            break;
+          case "Equal":
+            dispatch(setTotal());
+            break;
+          case "Negate":
+            dispatch(negate());
+            break;
+          case "%":
+            dispatch(percentage(key));
+            dispatch(updateValuePercent());
+            dispatch(calculate());
+            break;
+          default:
+            dispatch(setOperator(key));
+            dispatch(calculate());
+            break;
+        }
         break;
       default:
         break;
@@ -36,7 +59,9 @@ const Button = ({ button }) => {
     </i>
   ) : (
     <div
-      className={styles.button}
+      className={`${styles.button} ${
+        button.name === "equal" ? styles.equal : ""
+      }`}
       style={{ gridArea: name }}
       onClick={() => handleClick()}
     >

@@ -9,3 +9,11 @@
 		background: lighten(#222, 5%);
 	}
 }
+
+.equal {
+	background: #0C746A;
+
+	&:hover {
+		background: lighten(#0C746A, 5%);
+	}
+}
