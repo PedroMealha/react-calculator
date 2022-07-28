@@ -36,8 +36,6 @@ const Calculator = () => {
         </div>
       </div>
       <div className={styles.history}>
-        <div>steps: {calc.steps}</div>
-
         {calc.history.map((log, idx) => (
           <div key={idx}>
             <div>{log.equation} =</div>

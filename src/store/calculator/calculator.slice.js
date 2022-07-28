@@ -7,16 +7,17 @@ const initialState = {
 	lastTotal: "0",
 	equation: "0",
 	lastEquation: "0",
+	showEquation: "",
 	operator: "",
+	
 	steps: [],
 	history: [],
 	opCount: 2,
+	
 	opChange: false,
 	wasEqual: false,
 	newNumber: true,
 	isNegated: false,
-
-	showEquation: "",
 };
 
 export const calculatorSlice = createSlice({
@@ -97,7 +98,6 @@ export const calculatorSlice = createSlice({
 			}
 			state.lastNumber = state.number;
 			state.isNegated = !state.isNegated;
-			console.log("state.number:", state.number);
 		},
 
 		percentage: (state) => {
@@ -132,6 +132,22 @@ export const calculatorSlice = createSlice({
 			state.newNumber = true;
 		},
 
+		undo: (state) => {
+			const length = state.number.length;
+			length > 1
+				? (state.number = state.number.slice(0, length - 1))
+				: (state.number = "");
+
+			const eLength = state.equation.length;
+			if (eLength > eLength - length)
+				state.equation = state.equation.slice(0, eLength - 1);
+
+			length > 1 ?
+				state.equation = state.equation.slice(0, length - 1) :
+				state.equation = '0'
+			state.lastNumber = state.number;
+		},
+
 		clearAll: (state) => {
 			Object.keys(state).forEach((key) => (state[key] = initialState[key]));
 		},
@@ -146,6 +162,7 @@ export const {
 	negate,
 	calculate,
 	percentage,
+	undo,
 	clearAll,
 } = calculatorSlice.actions;
 
